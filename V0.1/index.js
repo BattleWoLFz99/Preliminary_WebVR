@@ -19,12 +19,16 @@ var createScene = function () {
     // Creat a variable to hold our score.
     var score = 0;
 
-	//Create a sphere for the scene
-	var sphere = BABYLON.Mesh.CreateIcoSphere("sphere", {radius:0.8, flat:true, subdivisions: 16}, scene);
-	sphere.material = new BABYLON.StandardMaterial("material", scene);
-	sphere.material.diffuseColor = new BABYLON.Color3(0.588, 0.805, 0.896);
-    sphere.position.y = 2;
-    sphere.physicsImpostor = new BABYLON.PhysicsImpostor(sphere, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.7 }, scene);
+    // Create spheres
+    var numberOfSpheres = 10;
+    var spheres = [];
+    for (let index = 0; index < numberOfSpheres; index++) {
+        spheres[index] = BABYLON.Mesh.CreateIcoSphere("sphere", {radius:0.8, flat:true, subdivisions: 16}, scene);
+        spheres[index].material = new BABYLON.StandardMaterial("material", scene)
+        spheres[index].material.diffuseColor = new BABYLON.Color3(0.588, 0.805, 0.896)
+        spheres[index].physicsImpostor = new BABYLON.PhysicsImpostor(spheres[index], BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.7 }, scene);
+        spheres[index].position = new BABYLON.Vector3(Math.random() * 20 - 10, 10, Math.random() * 10 - 5);
+    }
     
     // Create a button to restart the game
     var plane = BABYLON.Mesh.CreatePlane("plane", 40);
@@ -40,14 +44,16 @@ var createScene = function () {
     });
     advancedTexture.addControl(button);
 
-    //add an event that fires when a click happens
+    // When a sphere is clicked update the score
     scene.onPointerObservable.add((e)=>{
         if(e.type == BABYLON.PointerEventTypes.POINTERDOWN){
-            if(e.pickInfo.pickedMesh == sphere){
-                fadeSphere(sphere);
-            }
+            spheres.forEach((s)=>{
+                if(e.pickInfo.pickedMesh == s){
+                    fadeSphere(s);
+                }
+            });
         }
-    });	
+    });
 
     
     //add a function that scales and fades the sphere
@@ -58,16 +64,20 @@ var createScene = function () {
         BABYLON.Animation.CreateAndStartAnimation("sphereVisAnim", clickedSphere, "visibility", 30, 10, 1, 0, 0);
         score++;
         button.textBlock.text = "Reset Game (Score: "+score+")";
+        clickedSphere.isPickable = false;
     };
 
     function resetGame(){
         button.textBlock.text = "Reset Game";
-        sphere.visibility = 1;
-        sphere.scaling.x = 1;
-        sphere.scaling.y = 1;
-        sphere.scaling.z = 1;
-        sphere.position.y = 2;
-        sphere.physicsImpostor.setLinearVelocity(new BABYLON.Vector3());
+        for (let index = 0; index < numberOfSpheres; index++) {
+            spheres[index].visibility = 1;
+            spheres[index].scaling.x = 1;
+            spheres[index].scaling.y = 1;
+            spheres[index].scaling.z = 1;
+            spheres[index].position = new BABYLON.Vector3(Math.random() * 20 - 10, 10, Math.random() * 10 - 5);
+            spheres[index].physicsImpostor.setLinearVelocity(new BABYLON.Vector3());
+            spheres[index].isPickable = true;
+    }
         score = 0;
     };
 
