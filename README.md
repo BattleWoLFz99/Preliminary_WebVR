@@ -7,7 +7,7 @@ My own code: https://playground.babylonjs.com/#B2FDXD#5
 
 Note 1: in line 26 I replaced
 ```javascript
-spheres[index] = BABYLON.Mesh.CreateIcoSphere("sphere", {radius:0.8, flat:true, subdivisions: 16}, scene);
+spheres[index] = BABYLON.Mesh.CreateIcoSphere("sphere", {radius:0.8, flat:true, subdivisions: 16}, this.scene);
 ```
 with
 ```javascript
